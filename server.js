@@ -66,10 +66,32 @@ app.get('/api/exercise/users', (req,res) => {
         res.json(data);
     })
 })
+
 // 3)add an exercise log to a user - POST /api/exercise/add
 // get user id from form, log to that user - check to make sure user exists
 // log = {description, duration, date(optional, if blank default to current date)}
 // return user object with exercise fields added
+app.post('/api/exercise/add', (req,res) =>{
+    const userId = req.body.userId
+    // validate date, if invalid return current date
+    const exDate = new Date(req.body.date) != 'Invalid Date' ? new Date(req.body.date) : new Date()
+    const exObject = {
+        description: req.body.description,
+        duration: req.body.duration,
+        date: exDate,
+    }
+    console.log('BEFORE',req.body.date,'AFTER',exDate)
+    res.send(exObject)
+    // User.findById(userId, (err, data) => {
+    //     if(err){console.log(err)};
+    //     if(!data){return res.json({error:'user id not found'})}
+    //     data.log.push(exObject)
+    //     data.save((err,data) => {
+    //         res.json(data)
+    //     })
+    // })
+
+})
 
 // 4) get full ex log of any user - GET /api/exercise/log with param userId(_id)
 // return user object with added array log and count (total exercise count)
