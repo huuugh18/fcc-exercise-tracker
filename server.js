@@ -3,14 +3,22 @@ const app = express()
 const bodyParser = require('body-parser')
 
 const cors = require('cors')
+const mongo = require('mongodb');
+const mongoose = require('mongoose');
+const MongoClient = require('mongodb').MongoClient;
+const Schema = mongoose.Schema
 
-const mongoose = require('mongoose')
-mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
+// connect to mongo database
+process.env.MONGO_URI = 'mongodb+srv://huuugh18:something@cluster0-pia27.mongodb.net/test?retryWrites=true';
+const db = mongoose.connect(process.env.MONGO_URI, {useNewUrlParser:true} )
+.then(() => console.log('CONNECTED TO MONGODB'))
+.catch(err => console.log(err))
 
 app.use(cors())
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
+
 
 
 app.use(express.static('public'))
