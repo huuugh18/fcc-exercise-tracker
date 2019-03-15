@@ -61,7 +61,10 @@ app.post('/api/exercise/new-user', (req,res) => {
 // 2) get array of all users - GET /api/exercise/users
 // return array of objects with username and _id for each user
 app.get('/api/exercise/users', (req,res) => {
-
+    User.find({},{user_name:true,_id:true}, (err,data) => {
+        if(err){console.log(err)}
+        res.json(data);
+    })
 })
 // 3)add an exercise log to a user - POST /api/exercise/add
 // get user id from form, log to that user - check to make sure user exists
