@@ -98,6 +98,17 @@ app.post('/api/exercise/add', (req,res) => {
 
 // 4) get full ex log of any user - GET /api/exercise/log with param userId(_id)
 // return user object with added array log and count (total exercise count)
+app.get('/api/exercise/log/:userId', (req,res) => {
+    const userId = req.params.userId
+    console.log(req.params.userId)
+    User.findById(userId, (err, data) => {
+        if(err){console.log(err)};
+        if(!data){return res.json({error:'user not found'})};
+        res.json(data.log)
+    })
+})
+
+
 
 // 5) can get part of ex log with params of from & to or limit
 // date format yyyy-mm-dd, limit = int
