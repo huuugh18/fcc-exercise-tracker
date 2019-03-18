@@ -50,7 +50,10 @@ app.post('/api/exercise/new-user', (req,res) => {
         if(err){console.log(err)};
         // if data null carry on with adding user
         // if data not null - user iname in use 
-        if(data) { return res.json({error:`user name ${userInput} taken`}) };
+        if(data) { 
+            console.log('DATA',data)
+            return res.json({error:`user name ${userInput} taken`, id:data._id}) 
+        };
         const userDB = new User ({ user_name: userInput });
         userDB.save( (err,data) => {
             if(err){console.log('SAVE ERROR:',err)}
@@ -71,7 +74,7 @@ app.get('/api/exercise/users', (req,res) => {
 // get user id from form, log to that user - check to make sure user exists
 // log = {description, duration, date(optional, if blank default to current date)}
 // return user object with exercise fields added
-app.post('/api/exercise/add', (req,res) =>{
+app.post('/api/exercise/add', (req,res) => {
     const userId = req.body.userId
     // validate date, if invalid return current date
     const exDate = new Date(req.body.date) != 'Invalid Date' ? new Date(req.body.date) : new Date()
@@ -80,17 +83,17 @@ app.post('/api/exercise/add', (req,res) =>{
         duration: req.body.duration,
         date: exDate,
     }
-    console.log('BEFORE',req.body.date,'AFTER',exDate)
-    res.send(exObject)
-    // User.findById(userId, (err, data) => {
-    //     if(err){console.log(err)};
-    //     if(!data){return res.json({error:'user id not found'})}
-    //     data.log.push(exObject)
-    //     data.save((err,data) => {
-    //         res.json(data)
-    //     })
-    // })
-
+    User.findById(userId, (err, data) => {
+        if(err){console.log(err)};
+        if(!data){return res.json({error:'user id not found'})}
+        data.log.push(exObject)
+        data.save((err,data) => {
+            if(err){console.log(err)};
+            res.json(data);
+        })
+    })
+    // res.send(exObject)
+    
 })
 
 // 4) get full ex log of any user - GET /api/exercise/log with param userId(_id)
