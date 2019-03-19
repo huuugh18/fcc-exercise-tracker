@@ -98,22 +98,39 @@ app.post('/api/exercise/add', (req,res) => {
 
 // 4) get full ex log of any user - GET /api/exercise/log with param userId(_id)
 // return user object with added array log and count (total exercise count)
+// url /api/exercise/log/5c8c1ea8ff9ae02394fdb112?from=2010-01-01&to=2015-12-31
+// /api/exercise/log/5c8c1ea8ff9ae02394fdb112?from=2010-01-01&limit=2
+// 5) can get part of ex log with params of from & to or limit
+
 app.get('/api/exercise/log/:userId', (req,res) => {
     const userId = req.params.userId
-    console.log(req.params.userId)
-    User.findById(userId, (err, data) => {
-        if(err){console.log(err)};
-        if(!data){return res.json({error:'user not found'})};
-        res.json(data.log)
+    const queries = req.query
+    let filteredLog
+    console.log(queries)
+    User.findById(userId, (err,data) => {
+        if(err){ console.log(err) }
+        let userObject = data
+        if(queries.limit){
+            filteredLog = data.log.sort((x,y) => x.date - y.date).filter(x => x.date >= new Date(queries.from)).slice(0,queries.limit)
+            userObject.log = filteredLog
+            res.json(userObject)
+        }
+        else if(queries.to){
+            filteredLog = data.log.sort((x,y) => x.date - y.date).filter(x => x.date >= new Date(queries.from) && x.date <= new Date(queries.to))
+            userObject.log = filteredLog
+            res.json(userObject)
+        }
+        else {
+            userObject.total_exercise_count = userObject.log.length
+            res.json(userObject)
+        }
     })
+
 })
+    
 
 
 
-// 5) can get part of ex log with params of from & to or limit
-// date format yyyy-mm-dd, limit = int
-
-// check if id for user valid
 
 
 // post logs of user
