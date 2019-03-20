@@ -35,11 +35,7 @@ const userSchema = new Schema ({
     }],
 });
 const User = mongoose.model('User', userSchema)
-// const exerciseSchema = new Schema({
-//     description: {type: String, required: true},
-//     duration: {type: Number, required:true},
-//     date: {type: String, required: true}
-// })
+
 // const Exercise = mongoose.model('Exercise', exerciseSchema)
 // 1) add a user on  - POST /api/exercise/new-user
 // return object with username and db id
@@ -85,44 +81,40 @@ app.post('/api/exercise/add', (req,res) => {
     }
     User.findById(userId, (err, data) => {
         if(err){console.log(err)};
-        if(!data){return res.json({error:'user id not found'})}
-        data.log.push(exObject)
+        if(!data){return res.json({error:'user id not found'})};
+        data.log.push(exObject);
         data.save((err,data) => {
             if(err){console.log(err)};
             res.json(data);
-        })
-    })
-    // res.send(exObject)
-    
-})
+        });
+    });
+});
 
-// 4) get full ex log of any user - GET /api/exercise/log with param userId(_id)
-// return user object with added array log and count (total exercise count)
-// url /api/exercise/log/5c8c1ea8ff9ae02394fdb112?from=2010-01-01&to=2015-12-31
+// TEST URL: DATE 
+// /api/exercise/log/5c8c1ea8ff9ae02394fdb112?from=2010-01-01&to=2015-12-31
+// TEST URL: LIMIT
 // /api/exercise/log/5c8c1ea8ff9ae02394fdb112?from=2010-01-01&limit=2
-// 5) can get part of ex log with params of from & to or limit
 
 app.get('/api/exercise/log/:userId', (req,res) => {
-    const userId = req.params.userId
-    const queries = req.query
-    let filteredLog
-    console.log(queries)
+    const userId = req.params.userId;
+    const queries = req.query;
+    let filteredLog;
     User.findById(userId, (err,data) => {
         if(err){ console.log(err) }
-        let userObject = data
+        let userObject = data;
         if(queries.limit){
-            filteredLog = data.log.sort((x,y) => x.date - y.date).filter(x => x.date >= new Date(queries.from)).slice(0,queries.limit)
-            userObject.log = filteredLog
-            res.json(userObject)
+            filteredLog = data.log.sort((x,y) => x.date - y.date).filter(x => x.date >= new Date(queries.from)).slice(0,queries.limit);
+            userObject.log = filteredLog;
+            res.json(userObject);
         }
         else if(queries.to){
-            filteredLog = data.log.sort((x,y) => x.date - y.date).filter(x => x.date >= new Date(queries.from) && x.date <= new Date(queries.to))
-            userObject.log = filteredLog
-            res.json(userObject)
+            filteredLog = data.log.sort((x,y) => x.date - y.date).filter(x => x.date >= new Date(queries.from) && x.date <= new Date(queries.to));
+            userObject.log = filteredLog;
+            res.json(userObject);
         }
         else {
-            userObject.total_exercise_count = userObject.log.length
-            res.json(userObject)
+            userObject.total_exercise_count = userObject.log.length;
+            res.json(userObject);
         }
     })
 
